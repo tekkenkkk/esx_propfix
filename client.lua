@@ -9,25 +9,28 @@ Citizen.CreateThread(function()
 end)
 
 RegisterCommand("propfix", function()
-    if GetEntityHealth(GetPlayerPed(-1)) > 0 then
+    local ped = PlayerPedId()
+    local hp = GetEntityHealth(ped)
+    if GetEntityHealth(ped) > 0 then
         if not wait then
             TriggerEvent('skinchanger:getSkin', function(skin)
-            wait = true
-            Citizen.Wait(50)
-            local health = GetEntityHealth(GetPlayerPed(-1))
-            if skin.sex == 0 then
-                TriggerEvent('skinchanger:loadSkin', {sex=1})
+                wait = true
+                Citizen.Wait(50)
+                if skin.sex == 0 then
+                    TriggerEvent('skinchanger:loadSkin', {sex=1})
+                    Citizen.Wait(1000)
+                    TriggerEvent('skinchanger:loadSkin', {sex=0})
+                elseif skin.sex == 1 then
+                    TriggerEvent('skinchanger:loadSkin', {sex=0})
+                    Citizen.Wait(1000)
+                    TriggerEvent('skinchanger:loadSkin', {sex=1})
+                end
                 Citizen.Wait(1000)
-                TriggerEvent('skinchanger:loadSkin', {sex=0})
-            elseif skin.sex == 1 then
-                TriggerEvent('skinchanger:loadSkin', {sex=0})
-                Citizen.Wait(1000)
-                TriggerEvent('skinchanger:loadSkin', {sex=1})
-            end
-            Citizen.Wait(1000)
-            SetEntityHealth(GetPlayerPed(-1), health)
-            Citizen.Wait(30000)
-            wait = false
+                SetEntityHealth(ped, hp)
+                Citizen.CreateThread(function()
+                    Citizen.Wait(10000)
+                    wait = false
+                end)    
             end)
         else
             ESX.ShowNotification('Nie możesz używac tej komendy tak często')
