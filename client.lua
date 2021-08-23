@@ -11,7 +11,7 @@ end)
 RegisterCommand("propfix", function()
     local ped = PlayerPedId()
     local hp = GetEntityHealth(ped)
-    if GetEntityHealth(ped) > 0 then
+    if hp > 0 then
         if not wait then
             TriggerEvent('skinchanger:getSkin', function(skin)
                 wait = true
