@@ -13,25 +13,23 @@ RegisterCommand("propfix", function()
     local hp = GetEntityHealth(ped)
     if hp > 0 then
         if not wait then
-            TriggerEvent('skinchanger:getSkin', function(skin)
-                wait = true
-                Citizen.Wait(50)
-                if skin.sex == 0 then
-                    TriggerEvent('skinchanger:loadSkin', {sex=1})
-                    Citizen.Wait(1000)
-                    TriggerEvent('skinchanger:loadSkin', {sex=0})
-                elseif skin.sex == 1 then
-                    TriggerEvent('skinchanger:loadSkin', {sex=0})
-                    Citizen.Wait(1000)
-                    TriggerEvent('skinchanger:loadSkin', {sex=1})
-                end
-                Citizen.Wait(1000)
-                SetEntityHealth(ped, hp)
-                Citizen.CreateThread(function()
-                    Citizen.Wait(10000)
-                    wait = false
-                end)    
-            end)
+			wait = true
+            local model = GetEntityModel(PlayerPedId())
+			while not HasModelLoaded(model) do
+				RequestModel(model)
+				Citizen.Wait(0)
+			end
+			SetPlayerModel(PlayerId(), model)
+			SetPedDefaultComponentVariation(ped)
+			TriggerEvent('skinchanger:getSkin', function(result)
+				TriggerEvent('skinchanger:loadSkin', result)
+				Citizen.Wait(50)
+				SetEntityHealth(ped, hp)
+			end)
+			Citizen.CreateThread(function()
+				Citizen.Wait(10000)
+				wait = false
+			end)    
         else
             ESX.ShowNotification('Nie możesz używac tej komendy tak często')
         end
