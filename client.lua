@@ -13,20 +13,22 @@ RegisterCommand("propfix", function()
     local hp = GetEntityHealth(ped)
     if hp > 0 then
         if not wait then
-            wait = fals
-            local model = GetEntityModel(PlayerPedId())
+            wait = true
+            local model = GetEntityModel(ped)
             while not HasModelLoaded(model) do
                 RequestModel(model)
                 Citizen.Wait(0)
             end
             SetPlayerModel(PlayerId(), model)
             SetPedDefaultComponentVariation(ped)
+
             TriggerEvent('skinchanger:getSkin', function(result)
                 TriggerEvent('skinchanger:loadSkin', result)
-                Citizen.Wait(50)
-                SetEntityHealth(ped, hp)
             end)
+
             Citizen.CreateThread(function()
+                Citizen.Wait(100)
+                SetEntityHealth(PlayerPedId(), hp)
                 Citizen.Wait(10000)
                 wait = false
             end)    
